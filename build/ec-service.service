@@ -1,0 +1,13 @@
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/go/src/banca-service
+ExecStart=/root/go/src/banca-service/app.exe
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
+Description=banca
+After=network.target

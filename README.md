@@ -1,2 +1,1 @@
-# go
-Just for Go
+[![CICD - Deploy To Elastic Server](https://github.com/tel4vn/go-project/actions/workflows/cicd_elastic_server.yml/badge.svg)](https://github.com/tel4vn/go-project/actions/workflows/cicd_elastic_server.yml)

@@ -1,0 +1,22 @@
+{
+	"main": {
+		"port": "8004",
+		"log_type": "FILE",
+		"log_file": "tmp/console.log",
+		"db": "enabled",
+		"redis": "enabled"
+	},
+	"redis": {
+		"address": "localhost:6379",
+		"database": 0,
+		"password": ""
+	},
+	"db": {
+		"driver": "postgresql",
+		"host": "localhost",
+		"port": 5432,
+		"username": "fusionpbx",
+		"password": "tel4vn.com@@2021!#",
+		"database": "fusionpbx"
+	}
+}
