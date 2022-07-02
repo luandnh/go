@@ -1,0 +1,2 @@
+# go
+Just for Go
