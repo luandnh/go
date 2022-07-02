@@ -1,44 +1,49 @@
 package cache
 
 import (
-	"context"
 	"time"
 
-	"github.com/allegro/bigcache/v3"
-	"github.com/eko/gocache/v3/cache"
-	"github.com/eko/gocache/v3/store"
+	"github.com/jellydator/ttlcache/v2"
 )
 
-type MemCacheManager struct {
-	cache *cache.Cache[interface{}]
+type MemCache struct {
+	ttlCache ttlcache.SimpleCache
 }
 
-func NewMemCacheManager() IMemCache {
-	bigcacheClient, _ := bigcache.NewBigCache(bigcache.Config{})
-	bigcacheStore := store.NewBigcache(bigcacheClient)
-	cacheManager := cache.New[interface{}](bigcacheStore)
-	return &MemCacheManager{
-		cache: cacheManager,
+func NewMemCache() IMemCache {
+	cache := ttlcache.NewCache()
+	cache.SkipTTLExtensionOnHit(true)
+	return &MemCache{
+		ttlCache: cache,
 	}
 }
 
-func (m *MemCacheManager) Close() {
-	m.Close()
+func (c *MemCache) Set(key string, value interface{}) error {
+	err := c.ttlCache.Set(key, value)
+	return err
 }
 
-func (m *MemCacheManager) Set(key string, value interface{}) error {
-	return m.cache.Set(context.Background(), key, value)
-
+func (c *MemCache) Del(key string) error {
+	err := c.ttlCache.Remove(key)
+	return err
 }
 
-func (m *MemCacheManager) Get(key string) (interface{}, error) {
-	return m.cache.Get(context.Background(), key)
+func (c *MemCache) SetTTL(key string, value interface{}, ttl time.Duration) error {
+	err := c.ttlCache.SetWithTTL(key, value, ttl)
+	return err
 }
 
-func (m *MemCacheManager) Del(key string) error {
-	return m.cache.Delete(context.Background(), key)
+func (c *MemCache) Get(key string) (interface{}, error) {
+	value, err := c.ttlCache.Get(key)
+	if err == ttlcache.ErrNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	} else {
+		return value, nil
+	}
 }
 
-func (m *MemCacheManager) SetTTL(key string, value interface{}, ttl time.Duration) error {
-	return m.cache.Set(context.Background(), key, value, store.WithExpiration(ttl))
+func (c *MemCache) Close() {
+	c.ttlCache.Close()
 }

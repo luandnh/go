@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 	"go-project/common/cache"
-	IRedis "go-project/internal/redis"
+	"go-project/internal/redis"
 	"io"
 	"os"
 	"path/filepath"
@@ -73,11 +73,13 @@ func main() {
 	defer file.Close()
 	setAppLogger(config, file)
 
-	cache.MemCache = cache.NewMemCacheManager()
-	defer cache.MemCache.Close()
+	cache.MCache = cache.NewMemCache()
+	defer cache.MCache.Close()
 
-	cache.RCache = cache.NewRedisCache(IRedis.Redis.GetClient())
-	defer cache.RCache.Close()
+	if redis.Redis != nil {
+		cache.RCache = cache.NewRedisCache(redis.Redis.GetClient())
+		defer cache.RCache.Close()
+	}
 
 	server := api.NewServer()
 	server.Start(config.Port)

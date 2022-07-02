@@ -4,35 +4,36 @@ import (
 	"context"
 	"time"
 
-	"github.com/eko/gocache/v3/cache"
-	"github.com/eko/gocache/v3/store"
 	"github.com/go-redis/redis/v8"
 )
 
 type RedisCache struct {
-	cache *cache.Cache[interface{}]
+	cache *redis.Client
 }
 
 func NewRedisCache(client *redis.Client) IRedisCache {
-	redisStore := store.NewRedis(client)
-	cacheManager := cache.New[interface{}](redisStore)
 	return &RedisCache{
-		cache: cacheManager,
+		cache: client,
 	}
 }
 
 var ctx = context.Background()
 
 func (c *RedisCache) Set(key string, value interface{}) error {
-	return c.cache.Set(ctx, key, value)
+	_, err := c.cache.Set(ctx, key, value, redis.KeepTTL).Result()
+	return err
 }
 
 func (c *RedisCache) SetTTL(key string, value interface{}, ttl time.Duration) error {
-	return c.cache.Set(ctx, key, value, store.WithExpiration(ttl))
+	_, err := c.cache.Set(ctx, key, value, ttl).Result()
+	return err
 }
 
-func (c *RedisCache) Get(key string) (interface{}, error) {
-	value, err := c.cache.Get(ctx, key)
+func (c *RedisCache) Get(key string) (string, error) {
+	value, err := c.cache.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return "", nil
+	}
 	return value, err
 }
 
@@ -41,5 +42,6 @@ func (c *RedisCache) Close() {
 }
 
 func (c *RedisCache) Del(key string) error {
-	return c.cache.Delete(ctx, key)
+	_, err := c.cache.Del(ctx, key).Result()
+	return err
 }
