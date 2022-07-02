@@ -1,6 +1,7 @@
 package api
 
 import (
+	authMdw "go-project/middleware/auth"
 	"net/http"
 	"time"
 
@@ -19,6 +20,7 @@ type Server struct {
 
 func NewServer() *Server {
 	engine := gin.New()
+	authMdw.NewAuthMdw()
 	engine.Use(gin.Recovery())
 	engine.Use(CORSMiddleware())
 	engine.GET("/", func(c *gin.Context) {

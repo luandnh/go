@@ -14,6 +14,7 @@ import (
 	"time"
 
 	api "go-project/api"
+	apiV1 "go-project/api/v1"
 
 	_ "time/tzdata"
 
@@ -80,8 +81,8 @@ func main() {
 		cache.RCache = cache.NewRedisCache(redis.Redis.GetClient())
 		defer cache.RCache.Close()
 	}
-
 	server := api.NewServer()
+	apiV1.NewAuth(server.Engine)
 	server.Start(config.Port)
 }
 

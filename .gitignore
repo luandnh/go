@@ -13,9 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-tmp/console.log
-tmp/console.log.1656736688
-tmp/console.log.1656736717
-tmp/console.log.1656737357
-tmp/console.log.1656737540
+tmp/*
 config/config.json
+.vscode/launch.json
